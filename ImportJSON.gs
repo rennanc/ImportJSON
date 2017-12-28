@@ -618,3 +618,14 @@ function getDataFromNamedSheet_(sheetName) {
   Logger.log(jsonText);
   return JSON.parse(jsonText);
 }
+
+function ImportJSONTokenAuthentication(url, query, parseOptions, token) {
+   var fetchOptions = {
+      "headers" : {
+        "Authorization" : 'token ' + token
+      },
+      muteHttpExceptions: true
+   };
+
+  return ImportJSONAdvanced(url, fetchOptions, query, parseOptions, includeXPath_, defaultTransform_);
+}
