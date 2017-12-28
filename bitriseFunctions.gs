@@ -3,15 +3,15 @@ function test() {
 };
 
 function getUserInfo() { 
-  return ImportJSONBasicAuthentication("https://api.bitrise.io/v0.1/me","", "noInherit, noTruncate", "<userToken>");
+  return ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/me","", "noInherit, noTruncate", "<userToken>");
 };
 
 function getApps() { 
-  return ImportJSONBasicAuthentication("https://api.bitrise.io/v0.1/me/apps?limit=50","", "noInherit, noTruncate", "<userToken>");
+  return ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/me/apps?limit=50","", "noInherit, noTruncate", "<userToken>");
 };
 
 function getAppInfo(slug) { 
-  return ImportJSONBasicAuthentication("https://api.bitrise.io/v0.1/apps/"+slug,"", "noInherit, noTruncate", "<userToken>");
+  return ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/apps/"+slug,"", "noInherit, noTruncate", "<userToken>");
 };
 
 /**
