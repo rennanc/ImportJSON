@@ -71,8 +71,12 @@ function getAppsInfoBuild() {
 
 function getAllBuilds(appSlug){
     var listOldBuilds = [];
-    var buildOfFirstPage = ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/apps/"+appSlug+"/builds","", "noInherit, noTruncate", "qOnzWod4jTv2NIJUF3r6rMQY1pPwZpjFiC164RCboz8TL3i-YsfGV6HL6sQ0JfSds8umIh7j-7p2Om8r6cBJvA");
+    var buildOfFirstPage = ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/apps/"+appSlug+"/builds","", "noInherit, noTruncate", "<userToken>");
     var header = buildOfFirstPage[0];
+    //remove build data is on hold
+    if(header[8] === 'Data Is On Hold'){
+      header.splice(8,1);
+    }
     var paggingDetails = buildOfFirstPage[buildOfFirstPage.length - 1];
     var nextBuildSlug = paggingDetails[paggingDetails.length -1];
     
@@ -84,7 +88,7 @@ function getAllBuilds(appSlug){
     listOldBuilds = listOldBuilds.concat(buildOfFirstPage);
     
     while(nextBuildSlug != "50"){
-      var builds = ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/apps/"+appSlug+"/builds?next=" + nextBuildSlug,"", "noInherit, noTruncate", "qOnzWod4jTv2NIJUF3r6rMQY1pPwZpjFiC164RCboz8TL3i-YsfGV6HL6sQ0JfSds8umIh7j-7p2Om8r6cBJvA");
+      var builds = ImportJSONTokenAuthentication("https://api.bitrise.io/v0.1/apps/"+appSlug+"/builds?next=" + nextBuildSlug,"", "noInherit, noTruncate", "<userToken>");
       paggingDetails = builds[builds.length - 1];
       nextBuildSlug = paggingDetails[paggingDetails.length -1];
       builds = cleanBuildList(builds);
@@ -101,7 +105,12 @@ function cleanBuildList(builds){
   
   for (var i = parseInt(0); i < builds.length; i++) {
     if(isNaN(builds[i][5]) || builds[i][5] === ""){
-      builds[i].splice(3,0,"","");
+      if(builds[i][2] !== ""){ //fix date with wrong column
+        builds[i].splice(3,0,"",builds[i][2]);
+        builds[i][2] = "";
+      }else{
+        builds[i].splice(3,0,"","");
+      }
     }
     
     builds[i] = clearAbortedComment(builds[i]);
@@ -111,7 +120,7 @@ function cleanBuildList(builds){
 
 //remove comments of aborted build
 function clearAbortedComment(buildItem){
-   if(buildItem[6] === "aborted" && typeof(buildItem[8]) === "boolean"){ 
+   if((buildItem[6] === "aborted" || buildItem[6] === "success" || buildItem[6] === "error") && typeof(buildItem[8]) === "boolean"){ 
       buildItem.splice(7,1);
     }
     return buildItem
